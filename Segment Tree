@@ -1,44 +1,46 @@
 #include<bits/stdc++.h>
 using namespace std;
-int a[1000],b[1000]={0};
+int a[1000],seg[4000]={0};
 
-void tree(int low,int high,int pos)
+
+//slow:segment-low ,shigh:segment-high ,
+void tree(int slow,int shigh,int i)
 {
-    if(low==high)
+    if(slow==shigh)
     {
-        b[pos]=a[high];
+        seg[i]=a[shigh];
         return ;
     }
-    int mid=(high+low)/2;
-    
-    tree(low,mid,2*pos+1);
-    tree(mid+1,high,2*pos+2);
-    b[pos]=b[2*pos+1]+b[2*pos+2];
-    
+    int mid=(shigh+slow)/2;
+
+    tree(slow,mid,2*i+1);
+    tree(mid+1,shigh,2*i+2);
+    seg[i]=seg[2*i+1]+seg[2*i+2];
 }
 
-int sum(int s, int e, int low, int high, int pos)
+// qlow:query-low ,qhigh:query-high
+int sum(int slow, int shigh, int qlow, int qhigh, int i)
 {
-    
-    if (low<= s && high >= e)
-        return b[pos];
-    if (e < low || s > high)
+    if (qlow<= slow && qhigh >= shigh)
+        return seg[i];
+    if ( slow>qhigh||qlow>shigh)
         return 0;
-    int mid = (s+e)/2;
-    return (sum( s, mid, low, high, 2*pos+1) + sum( mid+1, e, low,high, 2*pos+2));
+    int mid = (slow+shigh)/2;
+    return (sum( slow, mid, qlow, qhigh, 2*i+1) + sum( mid+1, shigh, qlow,qhigh, 2*i+2));
 }
-void update(int low,int high,int i,int diff,int pos)
+
+void update(int slow,int shigh,int pos,int diff,int i)
 {
-    if(i<low or i>high) return;
-    b[pos]+=diff;
-    if(low!=high)
+    if(pos<slow or pos>shigh) return;
+    seg[i]+=diff;
+    if(slow!=shigh)
     {
-        int mid=(low+high)/2;
-        update(low,mid,i,diff,2*pos+1);
-        update(mid+1,high,i,diff,2*pos+2);
+        int mid=(slow+shigh)/2;
+        update(slow,mid,pos,diff,2*i+1);
+        update(mid+1,shigh,pos,diff,2*i+2);
     }
 }
- 
+
 int main()
 {
   int n;
@@ -47,12 +49,10 @@ int main()
   {
       cin >>a[i];
   }
-  
+
   tree(0,n-1,0);
   cout << sum(0,n-1,2,3,0)<<endl;
   int d=1;
-  update(0,n-1,2,a[2]-d,0);
+  update(0,n-1,2,-d,0);
    cout << sum(0,n-1,2,3,0);
-  
-  
 }
