@@ -1,0 +1,23 @@
+int bit[n+1] ;  //store value ;index start from 1 to n ;
+//arr[n] is given array on which operation is going to performed 
+
+int sum(i){
+i++ ;
+int ans=0 ;
+  while(i>0){
+     ans+=bit[i] ;
+     i=i-(i&(-i)) ;//unset rightmost set bit 
+  }
+return ans ;
+}
+
+
+void update(int i,int val){
+int diff=x-arr[i] ;
+arr[i]=x ;
+i=i+1 ;
+  while(i<=n){
+       bit[i]+=diff ;
+       i=i+(i&(-i)) ;
+  }
+}
